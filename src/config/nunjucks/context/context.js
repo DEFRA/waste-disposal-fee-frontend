@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 
 import { config } from '#/config/config.js'
 import { buildNavigation } from './build-navigation.js'
+import { authPaths, getUserSession } from '#/server/auth/entra-id.js'
 import { createLogger } from '#/server/common/helpers/logging/logger.js'
 
 const logger = createLogger()
@@ -29,6 +30,8 @@ export function context(request) {
     serviceUrl: '/',
     breadcrumbs: [],
     navigation: buildNavigation(request),
+    userName: getUserSession(request)?.name,
+    signOutUrl: authPaths.signOut,
     getAssetPath(asset) {
       if (!config.get('isProduction')) {
         return `${assetPath}/${asset}`
