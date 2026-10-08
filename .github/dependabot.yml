@@ -6,48 +6,82 @@ updates:
     directory: /
     open-pull-requests-limit: 10
 
-    # Group packages into shared PR
+    # Group minor and patch updates into shared PRs. Major updates get their own PR.
     groups:
+      hapi:
+        applies-to: version-updates
+        patterns:
+          - '@hapi/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+
+      defra:
+        applies-to: version-updates
+        patterns:
+          - '@defra/*'
+        exclude-patterns:
+          - '@defra/hapi-connect'
+        update-types:
+          - 'minor'
+          - 'patch'
+
       build:
+        applies-to: version-updates
         patterns:
           - '@babel/*'
-          - 'autoprefixer'
-          - 'babel-plugin-module-resolver'
-          - 'babel-loader'
-          - 'babel-plugin-transform-import-meta'
-          - 'tsx'
-          - 'webpack'
-          - 'webpack-*'
-          - 'terser-webpack-plugin'
+          - 'vite'
+          - 'sass-*'
+          - 'cssnano'
+          - 'cssnano-*'
+        update-types:
+          - 'minor'
+          - 'patch'
 
       lint:
+        applies-to: version-updates
         patterns:
           - 'prettier'
+          - 'neostandard'
           - 'stylelint'
           - 'stylelint-*'
+        update-types:
+          - 'minor'
+          - 'patch'
 
       logging:
+        applies-to: version-updates
         patterns:
           - '*-pino'
           - '*-pino-format'
           - 'pino'
           - 'pino-*'
+        update-types:
+          - 'minor'
+          - 'patch'
 
-      tools:
+      testing:
+        applies-to: version-updates
         patterns:
-          - 'husky'
           - 'vitest'
           - 'vitest-*'
+          - '@vitest/*'
+          - 'cheerio'
+          - '@defra/hapi-connect'
+        update-types:
+          - 'minor'
+          - 'patch'
+
+      tools:
+        applies-to: version-updates
+        patterns:
+          - 'husky'
           - 'nodemon'
           - 'npm-run-all'
           - 'lodash'
-          - 'source-map-loader'
-          - 'sass-*'
-          - 'postcss-*'
-
-      types:
-        patterns:
-          - '@types/*'
+        update-types:
+          - 'minor'
+          - 'patch'
 
     ignore:
       - dependency-name: 'eslint-*'
@@ -74,3 +108,10 @@ updates:
       interval: weekly
       time: '10:30'
       timezone: 'Europe/London'
+
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+
+  # Not the Dockerfile: its Node.js base image version must change together with .nvmrc
