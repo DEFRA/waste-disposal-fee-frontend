@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'path'
 import hapi from '@hapi/hapi'
 import Scooter from '@hapi/scooter'
@@ -10,15 +11,23 @@ import { nunjucksConfig } from '#/config/nunjucks/nunjucks.js'
 import { requestTracing } from './plugins/request-tracing.js'
 import { requestLogger } from './plugins/request-logger.js'
 import { sessionCache } from './plugins/session-cache.js'
+import { auth } from './plugins/auth.js'
+import { csrf } from './plugins/crumb.js'
 import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './plugins/content-security-policy.js'
 import { metrics } from '@defra/cdp-metrics'
+import { getDevelopmentTls } from './common/helpers/development-tls.js'
 
 export async function createServer() {
+  const isDevelopment = config.get('isDevelopment')
+  const certsDir = path.resolve(config.get('root'), 'certs')
+
   const server = hapi.server({
     host: config.get('host'),
     port: config.get('port'),
+    // Local HTTPS when certs/ has a cert, see `npm run setup:certs`
+    tls: getDevelopmentTls({ isDevelopment, certsDir, fs }),
     routes: {
       validate: {
         options: {
@@ -59,6 +68,8 @@ export async function createServer() {
     secureContext,
     pulse,
     sessionCache,
+    csrf,
+    auth,
     nunjucksConfig,
     Scooter,
     contentSecurityPolicy,

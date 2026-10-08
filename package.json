@@ -1,7 +1,7 @@
 {
   "name": "waste-disposal-fee-frontend",
   "version": "0.0.0",
-  "description": "CDP Frontend Template",
+  "description": "Frontend for waste disposal fees",
   "sideEffects": false,
   "main": "src/index.js",
   "type": "module",
@@ -27,7 +27,9 @@
     "server:debug": "nodemon --inspect-brk=0.0.0.0 --ext js,json --legacy-watch --watch ./src/server --watch ./src/config --env-file-if-exists=.env ./src",
     "prestart": "npm run build:frontend",
     "start": "NODE_ENV=production node .",
-    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module"
+    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
+    "setup:certs": "mkdir -p certs && mkcert -install && mkcert -key-file certs/localhost-key.pem -cert-file certs/localhost-cert.pem localhost 127.0.0.1 ::1",
+    "setup:api-cert": "scripts/export-dotnet-dev-cert.sh"
   },
   "imports": {
     "#/*": "./src/*",
@@ -38,11 +40,13 @@
   "dependencies": {
     "@defra/cdp-auditing": "0.6.1",
     "@defra/cdp-metrics": "0.6.0",
+    "@defra/hapi-auth-oidc": "0.5.6",
     "@defra/hapi-secure-context": "0.4.0",
     "@defra/hapi-tracing": "1.30.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/catbox-memory": "6.0.2",
     "@hapi/catbox-redis": "7.0.2",
+    "@hapi/crumb": "9.0.1",
     "@hapi/hapi": "21.4.10",
     "@hapi/inert": "7.1.2",
     "@hapi/scooter": "8.0.0",
@@ -54,7 +58,7 @@
     "cssnano": "8.0.10",
     "cssnano-preset-default": "8.0.10",
     "date-fns": "4.4.0",
-    "govuk-frontend": "6.4.0",
+    "govuk-frontend": "6.5.1",
     "hapi-pino": "13.0.0",
     "hapi-pulse": "4.0.0",
     "ioredis": "6.0.0",
@@ -80,5 +84,10 @@
     "vite": "8.2.2",
     "vitest": "4.1.11",
     "vitest-fetch-mock": "0.4.5"
+  },
+  "overrides": {
+    "@defra/hapi-auth-oidc": {
+      "joi@18.2.1": "18.2.9"
+    }
   }
 }

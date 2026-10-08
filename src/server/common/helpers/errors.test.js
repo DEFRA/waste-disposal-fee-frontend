@@ -25,6 +25,9 @@ describe('#errors', () => {
     expect(result).toEqual(
       expect.stringContaining('Page not found | waste-disposal-fee-frontend')
     )
+    expect(result).toEqual(
+      expect.stringContaining('<h1 class="govuk-heading-l">Page not found</h1>')
+    )
     expect(statusCode).toBe(statusCodes.notFound)
   })
 })
@@ -50,77 +53,69 @@ describe('#catchAll', () => {
     code: mockToolkitCode.mockReturnThis()
   }
 
-  test('Should provide expected "Not Found" page', () => {
+  const pageNotFound = {
+    pageTitle: 'Page not found',
+    heading: 'Page not found',
+    paragraphs: [
+      'If you typed the web address, check it is correct.',
+      'If you pasted the web address, check you copied the entire address.'
+    ]
+  }
+  const problemWithTheService = {
+    pageTitle: 'Sorry, there is a problem with the service',
+    heading: 'Sorry, there is a problem with the service',
+    paragraphs: ['Try again later.']
+  }
+
+  test('Should provide the "Page not found" page', () => {
     catchAll(mockRequest(statusCodes.notFound), mockToolkit)
 
     expect(mockErrorLogger).not.toHaveBeenCalledWith(mockStack)
-    expect(mockToolkitView).toHaveBeenCalledWith(errorPage, {
-      pageTitle: 'Page not found',
-      heading: statusCodes.notFound,
-      message: 'Page not found'
-    })
+    expect(mockToolkitView).toHaveBeenCalledWith(errorPage, pageNotFound)
     expect(mockToolkitCode).toHaveBeenCalledWith(statusCodes.notFound)
   })
 
-  test('Should provide expected "Forbidden" page', () => {
-    catchAll(mockRequest(statusCodes.forbidden), mockToolkit)
-
-    expect(mockErrorLogger).not.toHaveBeenCalledWith(mockStack)
-    expect(mockToolkitView).toHaveBeenCalledWith(errorPage, {
-      pageTitle: 'Forbidden',
-      heading: statusCodes.forbidden,
-      message: 'Forbidden'
-    })
-    expect(mockToolkitCode).toHaveBeenCalledWith(statusCodes.forbidden)
-  })
-
-  test('Should provide expected "Unauthorized" page', () => {
-    catchAll(mockRequest(statusCodes.unauthorized), mockToolkit)
-
-    expect(mockErrorLogger).not.toHaveBeenCalledWith(mockStack)
-    expect(mockToolkitView).toHaveBeenCalledWith(errorPage, {
-      pageTitle: 'Unauthorized',
-      heading: statusCodes.unauthorized,
-      message: 'Unauthorized'
-    })
-    expect(mockToolkitCode).toHaveBeenCalledWith(statusCodes.unauthorized)
-  })
-
-  test('Should provide expected "Bad Request" page', () => {
-    catchAll(mockRequest(statusCodes.badRequest), mockToolkit)
-
-    expect(mockErrorLogger).not.toHaveBeenCalledWith(mockStack)
-    expect(mockToolkitView).toHaveBeenCalledWith(errorPage, {
-      pageTitle: 'Bad Request',
-      heading: statusCodes.badRequest,
-      message: 'Bad Request'
-    })
-    expect(mockToolkitCode).toHaveBeenCalledWith(statusCodes.badRequest)
-  })
-
-  test('Should provide expected default page', () => {
-    catchAll(mockRequest(statusCodes.imATeapot), mockToolkit)
-
-    expect(mockErrorLogger).not.toHaveBeenCalledWith(mockStack)
-    expect(mockToolkitView).toHaveBeenCalledWith(errorPage, {
-      pageTitle: 'Something went wrong',
-      heading: statusCodes.imATeapot,
-      message: 'Something went wrong'
-    })
-    expect(mockToolkitCode).toHaveBeenCalledWith(statusCodes.imATeapot)
-  })
-
-  test('Should provide expected "Something went wrong" page and log error for internalServerError', () => {
-    catchAll(mockRequest(statusCodes.internalServerError), mockToolkit)
+  test('Should provide the "Service unavailable" page and log the error', () => {
+    catchAll(mockRequest(statusCodes.serviceUnavailable), mockToolkit)
 
     expect(mockErrorLogger).toHaveBeenCalledWith(mockStack)
     expect(mockToolkitView).toHaveBeenCalledWith(errorPage, {
-      pageTitle: 'Something went wrong',
-      heading: statusCodes.internalServerError,
-      message: 'Something went wrong'
+      pageTitle: 'Sorry, the service is unavailable',
+      heading: 'Sorry, the service is unavailable',
+      paragraphs: ['You will be able to use the service later.']
     })
+    expect(mockToolkitCode).toHaveBeenCalledWith(statusCodes.serviceUnavailable)
+  })
+
+  test('Should provide the "Problem with the service" page and log the error for internalServerError', () => {
+    catchAll(mockRequest(statusCodes.internalServerError), mockToolkit)
+
+    expect(mockErrorLogger).toHaveBeenCalledWith(mockStack)
+    expect(mockToolkitView).toHaveBeenCalledWith(
+      errorPage,
+      problemWithTheService
+    )
     expect(mockToolkitCode).toHaveBeenCalledWith(
       statusCodes.internalServerError
     )
   })
+
+  test.each([
+    statusCodes.badRequest,
+    statusCodes.unauthorized,
+    statusCodes.forbidden,
+    statusCodes.imATeapot
+  ])(
+    'Should provide the "Problem with the service" page for %i, without logging it',
+    (statusCode) => {
+      catchAll(mockRequest(statusCode), mockToolkit)
+
+      expect(mockErrorLogger).not.toHaveBeenCalledWith(mockStack)
+      expect(mockToolkitView).toHaveBeenCalledWith(
+        errorPage,
+        problemWithTheService
+      )
+      expect(mockToolkitCode).toHaveBeenCalledWith(statusCode)
+    }
+  )
 })

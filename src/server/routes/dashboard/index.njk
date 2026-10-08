@@ -1,0 +1,64 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">{{ heading }}</h1>
+  <p class="govuk-hint govuk-!-margin-bottom-6">Set up and run packaging payment calculations, and view past runs by financial year.</p>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l govuk-!-margin-top-3 govuk-!-margin-bottom-1">Calculation runs</h2>
+      <p class="govuk-body-s">View and select a calculation run. You can also filter by financial year to find previous runs.</p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      {# Submits when the year changes, the button is for users without JavaScript #}
+      <form method="get" novalidate data-module="app-auto-submit">
+        {{ govukSelect({
+          id: "relativeYear",
+          name: "relativeYear",
+          label: { text: "Select a financial year" },
+          classes: "govuk-!-width-full",
+          items: relativeYearItems
+        }) }}
+
+        {{ govukButton({
+          text: "Show runs",
+          classes: "govuk-button--secondary",
+          attributes: { "data-auto-submit-button": "" }
+        }) }}
+      </form>
+    </div>
+  </div>
+
+  <hr class="govuk-section-break govuk-section-break--visible">
+
+  <div data-testid="app-page-body">
+    {% if runs | length %}
+      {% set rows = [] %}
+      {% for run in runs %}
+        {% set runHtml %}
+          <h3 class="govuk-heading-m govuk-!-margin-bottom-3">{{ run.name }}</h3>
+          <p class="govuk-body govuk-!-margin-bottom-0">
+            Calculation ID: {{ run.id }}<br>
+            Date: {{ run.createdAt }}<br>
+            Run by: {{ run.createdBy }}
+          </p>
+        {% endset %}
+        {% set ignored = rows.push({
+          key: { html: runHtml, classes: "govuk-!-width-two-thirds" },
+          value: { html: govukTag(run.status) if run.status else "" }
+        }) %}
+      {% endfor %}
+
+      {{ govukSummaryList({
+        rows: rows
+      }) }}
+    {% else %}
+      <p class="govuk-body">There are no calculations for the {{ financialYear }} financial year.</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,14 +1,7 @@
-export function buildNavigation(request) {
-  return [
-    {
-      text: 'Home',
-      href: '/',
-      current: request?.path === '/'
-    },
-    {
-      text: 'About',
-      href: '/about',
-      current: request?.path === '/about'
-    }
-  ]
+/**
+ * Service navigation links. None yet: the service name already links to the
+ * dashboard, the home page. Add links here as pages are added.
+ */
+export function buildNavigation(_request) {
+  return []
 }

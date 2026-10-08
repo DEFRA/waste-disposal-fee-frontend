@@ -1,0 +1,18 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  {{ appHeading({
+    text: heading
+  }) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds" data-testid="app-page-body">
+      <p class="govuk-body">Entra ID is not configured. Set these environment variables, for example in a <code>.env</code> file, then restart:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for setting in missingSettings %}
+          <li><code>{{ setting }}</code></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}
