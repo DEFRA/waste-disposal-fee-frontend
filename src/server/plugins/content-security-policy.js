@@ -1,5 +1,7 @@
 import Blankie from 'blankie'
 
+import { entraIdOrigin } from '#/server/auth/entra-id.js'
+
 /**
  * Manage content security policies.
  * @satisfies {import('@hapi/hapi').Plugin}
@@ -11,7 +13,7 @@ const contentSecurityPolicy = {
     // https://frontend.design-system.service.gov.uk/import-javascript/#if-our-inline-javascript-snippet-is-blocked-by-a-content-security-policy
     defaultSrc: ['self'],
     fontSrc: ['self', 'data:'],
-    connectSrc: ['self', 'wss', 'data:'],
+    connectSrc: ['self', 'wss:', 'data:'],
     mediaSrc: ['self'],
     styleSrc: ['self'],
     scriptSrc: [
@@ -22,7 +24,9 @@ const contentSecurityPolicy = {
     frameSrc: ['self', 'data:'],
     objectSrc: ['none'],
     frameAncestors: ['none'],
-    formAction: ['self'],
+    // Submitting a form when the session has expired redirects to Entra ID to sign in.
+    // Browsers apply form-action to those redirects too, so without Entra ID they're blocked.
+    formAction: ['self', entraIdOrigin()].filter(Boolean),
     manifestSrc: ['self'],
     generateNonces: false
   }

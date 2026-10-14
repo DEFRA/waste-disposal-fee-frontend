@@ -5,6 +5,14 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     clearMocks: true,
+    env: {
+      ENTRA_ID_AUTHORITY: 'https://login.test/tenant-id',
+      ENTRA_ID_CLIENT_ID: 'frontend-client-id',
+      ENTRA_ID_CLIENT_SECRET: 'frontend-client-secret',
+      ENTRA_ID_API_SCOPE: 'api://calculator-api/.default',
+      // Tests that check audit events mock @defra/cdp-auditing
+      CDP_AUDIT_ENABLED: 'false'
+    },
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',

@@ -6,6 +6,7 @@ import convictFormatWithValidator from 'convict-format-with-validator'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
+const twentySecondsMs = 20000
 const fourHoursMs = 14400000
 const oneWeekMs = 604800000
 
@@ -100,13 +101,6 @@ export const config = convict({
       env: 'LOG_REDACT'
     }
   },
-  httpProxy: {
-    doc: 'HTTP Proxy',
-    format: String,
-    nullable: true,
-    default: null,
-    env: 'HTTP_PROXY'
-  },
   isSecureContextEnabled: {
     doc: 'Enable Secure Context',
     format: Boolean,
@@ -142,9 +136,11 @@ export const config = convict({
         env: 'SESSION_COOKIE_TTL'
       },
       password: {
-        doc: 'session cookie password',
+        doc: 'Encrypts the session and sign-in cookies, at least 32 characters. Required in production, so a missing secret stops the app starting instead of using a public password',
         format: String,
-        default: 'the-password-must-be-at-least-32-characters-long',
+        default: isProduction
+          ? null
+          : 'the-password-must-be-at-least-32-characters-long',
         env: 'SESSION_COOKIE_PASSWORD',
         sensitive: true
       },
@@ -214,6 +210,65 @@ export const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+  appBaseUrl: {
+    doc: 'Public base URL of this frontend, used to build the sign-in redirect URI. Required in production',
+    format: String,
+    default: isProduction ? null : 'http://localhost:3000',
+    env: 'APP_BASE_URL'
+  },
+  relativeYearStartingMonth: {
+    doc: 'Month (1-12) the relative year starts in',
+    format: 'int',
+    default: 4,
+    env: 'RELATIVE_YEAR_STARTING_MONTH'
+  },
+  entraId: {
+    authority: {
+      doc: 'Entra ID authority, i.e. https://login.microsoftonline.com/{tenant-id}',
+      format: String,
+      default: '',
+      env: 'ENTRA_ID_AUTHORITY'
+    },
+    clientId: {
+      doc: 'Entra ID client ID of this frontend',
+      format: String,
+      default: '',
+      env: 'ENTRA_ID_CLIENT_ID'
+    },
+    clientSecret: {
+      doc: 'Entra ID client secret of this frontend. Only used locally: in production, the app uses its federated credential',
+      format: String,
+      default: '',
+      env: 'ENTRA_ID_CLIENT_SECRET',
+      sensitive: true
+    },
+    federatedCredentialsAudience: {
+      doc: 'Audience of the federated credential on the app registration, which production asks AWS STS for',
+      format: String,
+      default: 'waste-disposal-fee-frontend',
+      env: 'FEDERATED_CREDENTIALS_AUDIENCE'
+    },
+    apiScope: {
+      doc: 'Calculator API scopes, space separated, e.g. api://{api-client-id}/.default',
+      format: String,
+      default: '',
+      env: 'ENTRA_ID_API_SCOPE'
+    }
+  },
+  calculatorApi: {
+    baseUrl: {
+      doc: 'EPR Calculator API base URL. Required in production',
+      format: String,
+      default: isProduction ? null : 'https://localhost:7265',
+      env: 'CALCULATOR_API_BASE_URL'
+    }
+  },
+  outboundRequestTimeout: {
+    doc: 'Milliseconds to wait for the Calculator API or Entra ID to respond, before giving up',
+    format: 'nat',
+    default: twentySecondsMs,
+    env: 'OUTBOUND_REQUEST_TIMEOUT'
   }
 })
 

@@ -1,7 +1,8 @@
 import inert from '@hapi/inert'
 
-import { home } from '../routes/home/index.js'
-import { about } from '../routes/about/index.js'
+import { dashboard } from '../routes/dashboard/index.js'
+import { auth } from '../routes/auth/index.js'
+import { checkApiConnection } from '../routes/check-api-connection/index.js'
 import { health } from '../routes/health/index.js'
 import { serveStaticFiles } from './serve-static-files.js'
 import { config } from '#/config/config.js'
@@ -16,27 +17,25 @@ export const router = {
       await server.register([health])
 
       // Application specific routes, add your own routes here
-      await server.register([home, about])
+      await server.register([auth, dashboard, checkApiConnection])
 
       // Static assets
       if (!config.get('isProduction') && !config.get('isTest')) {
-        await (async () => {
-          const createViteServer = (await import('vite')).createServer
-          const vite = await createViteServer({
-            server: { middlewareMode: true },
-            appType: 'custom'
-          })
+        const createViteServer = (await import('vite')).createServer
+        const vite = await createViteServer({
+          server: { middlewareMode: true },
+          appType: 'custom'
+        })
 
-          await server.register({
-            plugin: (await import('@defra/hapi-connect')).default,
-            options: {
-              path: '/public',
-              middleware: [vite.middlewares]
-            }
-          })
-        })()
+        await server.register({
+          plugin: (await import('@defra/hapi-connect')).default,
+          options: {
+            path: '/public',
+            middleware: [vite.middlewares]
+          }
+        })
       } else {
-        server.register(serveStaticFiles)
+        await server.register(serveStaticFiles)
       }
     }
   }

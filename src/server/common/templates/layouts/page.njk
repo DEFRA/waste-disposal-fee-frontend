@@ -2,9 +2,11 @@
 
 {# Import GOVUK components globally #}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
 
 {# Import custom components globally #}
+{% from "csrf-field/macro.njk" import appCsrfField %}
 {% from "heading/macro.njk" import appHeading %}
 
 {% set mainClasses = "app-main-wrapper" %}
@@ -22,18 +24,34 @@
 {% endblock %}
 
 {% block header %}
-  {# serviceName being used in govukHeader will be @deprecated in v6. It has moved to govukServiceNavigation - https://github.com/alphagov/govuk-frontend/blob/main/CHANGELOG.md#move-service-name-and-navigation-links-from-the-govuk-header-to-service-navigation-component #}
+  {# govuk-frontend v6 removed serviceName from the header, it belongs in service navigation #}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
-    containerClasses: "govuk-width-container",
-    serviceName: serviceName,
-    serviceUrl: serviceUrl,
-    useTudorCrown: true
+    containerClasses: "govuk-width-container"
   }) }}
 
+  {# The Design System puts authentication links in the service navigation's end slot #}
+  {% set accountHtml %}
+    {% if userName %}
+      <ul class="govuk-service-navigation__list">
+        <li class="govuk-service-navigation__item">
+          <span class="govuk-service-navigation__text">{{ userName }}</span>
+        </li>
+        <li class="govuk-service-navigation__item">
+          <a class="govuk-service-navigation__link" href="{{ signOutUrl }}">Sign out</a>
+        </li>
+      </ul>
+    {% endif %}
+  {% endset %}
+
   {{ govukServiceNavigation({
-    navigation: navigation
+    serviceName: serviceName,
+    serviceUrl: serviceUrl,
+    navigation: navigation,
+    slots: {
+      end: { html: accountHtml, align: "inline" } if userName
+    }
   }) }}
 {% endblock %}
 
@@ -42,6 +60,10 @@
 {% endblock %}
 
 {% block beforeContent %}
+  {{ govukPhaseBanner({
+    tag: { text: "Beta" },
+    text: "This is a new service."
+  }) }}
   {% if breadcrumbs.length > 1 %}
     {{ govukBreadcrumbs({
       items: breadcrumbs
