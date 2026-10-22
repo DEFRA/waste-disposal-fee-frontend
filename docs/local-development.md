@@ -4,7 +4,7 @@
 
 | Tool                                                                    | Why                                                               |
 | ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Node.js 24.14.1, with [fnm](https://github.com/Schniz/fnm) or nvm       | The version in [`.nvmrc`](../.nvmrc), the same as on CDP          |
+| Node.js 24.22.1, with [fnm](https://github.com/Schniz/fnm) or nvm       | The version in [`.nvmrc`](../.nvmrc), the same as on CDP          |
 | [mkcert](https://github.com/FiloSottile/mkcert) (`brew install mkcert`) | A trusted certificate, so the app can run on HTTPS                |
 | The Calculator API, running locally                                     | Something to call. See [below](#calling-the-api-locally)          |
 | Access to an Entra ID app registration                                  | To sign in. See [below](#entra-id)                                |
@@ -12,7 +12,7 @@
 
 ### Node.js version
 
-Use 24.14.1. Some other versions, including 25.2, fail on start-up:
+Use 24.22.1. Some other versions, including 25.2, fail on start-up:
 
 ```text
 TypeError [ERR_INVALID_MODULE_SPECIFIER]: Invalid module "#/server/common/helpers/start-server.js" is not a valid internal imports specifier name
@@ -135,7 +135,7 @@ This builds the client assets and runs with `NODE_ENV=production`: Redis session
 
 | You see                                                                                               | Why, and what to do                                                                                                                                   |
 | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ERR_INVALID_MODULE_SPECIFIER` on start-up                                                            | The wrong Node.js version. `node -v` should say v24.14.1. See [Node.js version](#nodejs-version)                                                      |
+| `ERR_INVALID_MODULE_SPECIFIER` on start-up                                                            | The wrong Node.js version. `node -v` should say v24.22.1. See [Node.js version](#nodejs-version)                                                      |
 | `sh: nodemon: command not found`                                                                      | You haven't run `npm install` in this repo. Check you're in the right repo                                                                            |
 | "Sign-in is not set up"                                                                               | `.env` is missing `ENTRA_ID_*` settings, listed on the page. Fill them in and restart                                                                 |
 | `AADSTS50011: The redirect URI … does not match`                                                      | `APP_BASE_URL` + `/signin-oidc` isn't registered on the app registration. Use `https://localhost:7163`, with a certificate from `npm run setup:certs` |
