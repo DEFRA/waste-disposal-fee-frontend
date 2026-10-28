@@ -32,8 +32,6 @@ updates:
           - '@babel/*'
           - 'vite'
           - 'sass-*'
-          - 'cssnano'
-          - 'cssnano-*'
         update-types:
           - 'minor'
           - 'patch'
