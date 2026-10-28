@@ -70,6 +70,15 @@ updates:
           - 'minor'
           - 'patch'
 
+      # vitest and @vitest/* must stay on the same version, so their major updates share a PR too
+      vitest-major:
+        applies-to: version-updates
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+        update-types:
+          - 'major'
+
       tools:
         applies-to: version-updates
         patterns:
