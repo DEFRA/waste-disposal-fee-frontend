@@ -55,6 +55,10 @@ export function entraIdAuthProvider() {
   }
 }
 
+function entraIdAuthority() {
+  return config.get('entraId.authority')
+}
+
 export function isEntraIdConfigured() {
   return missingEntraIdSettings().length === 0
 }
@@ -63,7 +67,7 @@ export function isEntraIdConfigured() {
  * @returns Entra ID's origin, e.g. https://login.microsoftonline.com, or null if not configured
  */
 export function entraIdOrigin() {
-  const authority = config.get('entraId.authority')
+  const authority = entraIdAuthority()
   return authority ? new URL(authority).origin : null
 }
 
@@ -71,7 +75,7 @@ export function entraIdOrigin() {
  * Where @defra/hapi-auth-oidc finds Entra ID's endpoints and settings
  */
 export function entraIdDiscoveryUri() {
-  return `${config.get('entraId.authority')}/v2.0/.well-known/openid-configuration`
+  return `${entraIdAuthority()}/v2.0/.well-known/openid-configuration`
 }
 
 /**
@@ -118,7 +122,7 @@ export function isSafeReturnUrl(url) {
 }
 
 export function signOutUrl() {
-  const url = new URL(`${config.get('entraId.authority')}/oauth2/v2.0/logout`)
+  const url = new URL(`${entraIdAuthority()}/oauth2/v2.0/logout`)
   url.searchParams.set(
     'post_logout_redirect_uri',
     `${config.get('appBaseUrl')}${authPaths.signedOut}`

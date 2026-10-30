@@ -24,6 +24,8 @@ const months = [
   'Dec'
 ]
 
+const PURPLE_TAG = 'govuk-tag--purple'
+
 /**
  * Run classifications, as numbers like the API sends them, with the label
  * and tag colour the dashboard shows.
@@ -38,22 +40,22 @@ export const runClassifications = {
   7: {
     name: 'InitialCompleted',
     label: 'Initial run completed',
-    tag: 'govuk-tag--purple'
+    tag: PURPLE_TAG
   },
   8: {
     name: 'Initial',
     label: 'Initial run classified',
-    tag: 'govuk-tag--purple'
+    tag: PURPLE_TAG
   },
   9: {
     name: 'Recalculation',
     label: 'Re-calculation run classified',
-    tag: 'govuk-tag--purple'
+    tag: PURPLE_TAG
   },
   12: {
     name: 'RecalculationCompleted',
     label: 'Re-calculation run completed',
-    tag: 'govuk-tag--purple'
+    tag: PURPLE_TAG
   }
 }
 
@@ -68,10 +70,10 @@ export function formatRunDate(value) {
   const parts = Object.fromEntries(
     londonDateTime
       .formatToParts(new Date(utc))
-      .map(({ type, value }) => [type, value])
+      .map((part) => [part.type, part.value])
   )
 
-  return `${parts.day} ${months[parts.month - 1]} ${parts.year} at ${parts.hour}:${parts.minute}`
+  return `${parts.day} ${months[Number(parts.month) - 1]} ${parts.year} at ${parts.hour}:${parts.minute}`
 }
 
 /**

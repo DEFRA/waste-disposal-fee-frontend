@@ -42,10 +42,9 @@ jobs:
           docker build --no-cache --tag waste-disposal-fee-frontend .
           exit $?
 
-# Uncomment once the SONAR_TOKEN repository secret is set up
-#      - name: SonarCloud Scan
-#        if: github.actor != 'dependabot[bot]'
-#        uses: SonarSource/sonarqube-scan-action@v8
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Scan
+        if: github.actor != 'dependabot[bot]'
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
